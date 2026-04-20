@@ -9,7 +9,6 @@ book_count = 0
 # AND OTHER THINGS.
 
 
-
 print(f"Library app {app_name} version {version} is active: {is_active}")
 
 
@@ -68,6 +67,37 @@ def all_genres(library: list) -> None:
     print(genres)
 
 
+# Below is book_iterator decorator
+def book_iterator(genre_filter, library):
+    def inner():
+        for book in library:
+            if book['genre'] == genre_filter:
+                print(book)
+    return inner
+
+
+# count_call decorator
+def count_call():
+    counterr = 0
+    def inner():
+        counterr += 1
+    return counterr
+
+
+def write_to_json():
+    pass
+    # try:
+        # write to json
+    # except some exception:
+    # do something
+    # and etc.
+
+
+
+
+
+
+
 class Book:
     def __init__(self, title, author, year, genre) -> None:
         self.title = title
@@ -93,6 +123,12 @@ class Library:
 
     def add_books(self, book) -> None:
         self.books.append(book)
+
+
+class EBook(Book):
+    def __init__(self, title, author, year, genre):
+        super().__init__(title, author, year, genre)
+
 
 
 def main():
