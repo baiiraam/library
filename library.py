@@ -4,6 +4,12 @@ is_active = True
 book_count = 0
 # library = []
 
+# ADD GENERATORS,
+# IMPLEMENT CLASSES + INHERITANCE
+# AND OTHER THINGS.
+
+
+
 print(f"Library app {app_name} version {version} is active: {is_active}")
 
 
