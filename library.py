@@ -1,3 +1,5 @@
+import json
+
 app_name = "library"
 version = "0.1"
 is_active = True
@@ -6,7 +8,6 @@ book_count = 0
 
 # ADD GENERATORS,
 # IMPLEMENT CLASSES + INHERITANCE
-# AND OTHER THINGS.
 
 
 print(f"Library app {app_name} version {version} is active: {is_active}")
@@ -80,17 +81,15 @@ def book_iterator(genre_filter, library):
 def count_call():
     counterr = 0
     def inner():
+        nonlocal counterr
         counterr += 1
-    return counterr
+        return counterr
+    return inner
 
 
-def write_to_json():
-    pass
-    # try:
-        # write to json
-    # except some exception:
-    # do something
-    # and etc.
+def write_to_json(book, filename="alpha.txt"):
+    with open(file=filename, mode='+a') as f:
+        json.dump(obj=book, fp=f, indent=4)
 
 
 
@@ -156,6 +155,7 @@ def main():
     year_2000 = [elem["year"] for elem in library]
     print(year_2000)
     all_genres(library)
+    write_to_json(book1)
 
 
 if __name__ == "__main__":
