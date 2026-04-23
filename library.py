@@ -3,6 +3,10 @@ from typing import Union
 
 
 class CustomException(Exception):
+    """
+    Custom Exception.
+    """
+
     pass
 
 
@@ -13,6 +17,11 @@ def create_book(
     is_read: Union[bool, None] = None,
     genre: Union[str, None] = None,
 ):
+    """Create a book.
+
+    Parameters:
+        ...
+    """
     book = {
         "title": title,
         "author": author,
@@ -24,12 +33,24 @@ def create_book(
 
 
 def is_classic(book: dict) -> bool:
+    """
+    Check if a book is classic.
+
+    Parameters:
+        ...
+    """
     if book["year"] and book["year"] < 1950:
         return True
     return False
 
 
 def book_era(book: dict) -> str:
+    """
+    Check if a book is old.
+
+    Parameter:
+        ...
+    """
     if book["year"] and book["year"] > 2000:
         return "new"
     return "old"
@@ -46,71 +67,64 @@ def count_call(func):
 
 @count_call
 def add_book(library: Union[list, None], book: dict) -> None:
-    if library is None:
-        raise CustomException("You should have a library first!")
-    else:
-        library.append(book)
-        print(
-            f"{book['title']} is added to library. Currently there are {len(library)} books"
-        )
+    """
+    Add book.
+    """
+    assert library is not None, CustomException("You should have a library first!")
+    library.append(book)
+    print(
+        f"{book['title']} is added to library. Currently there are {len(library)} books"
+    )
 
 
 def remove_book(library: Union[list, None], title: str) -> None:
-    if library is None:
-        raise CustomException("No library!")
-    else:
-        for book in library:
-            if book["title"] == title:
-                library.remove(book)
-                print(f"Book with title {title} is removed")
-                return
-        print(f"Book with title {title} not found")
+    assert library is not None, CustomException("No library!")
+    for book in library:
+        if book["title"] == title:
+            library.remove(book)
+            print(f"Book with title {title} is removed")
+            return
+    print(f"Book with title {title} not found")
 
 
 def all_genres(library: Union[list, None]) -> None:
     genres = set()
-    if library is None:
-        raise CustomException("No library!")
-    else:
-        for elem in library:
-            genres.add(elem["genre"])
-        print(genres)
+    assert library is not None, CustomException("No library!")
+    for elem in library:
+        genres.add(elem["genre"])
+    print(genres)
 
 
 def book_iterator(library: Union[list, None], genre_filter=None):
-    if library is None:
-        raise CustomException("You should have a library first!")
-    else:
-        for book in library:
-            if genre_filter is None or book.get("genre") == genre_filter:
-                yield book
+    assert library is not None, CustomException("You should have a library first!")
+    for book in library:
+        if genre_filter is None or book.get("genre") == genre_filter:
+            yield book
 
 
 def write_to_json(data: object, filename="library.json") -> None:
-    if not data:
-        return
-    else:
-        try:
-            with open(file=filename, mode="w", encoding="utf-8") as f:
-                json.dump(obj=data, fp=f, indent=4, ensure_ascii=False)
-        except (IOError, OSError, TypeError) as e:
-            print(f"Error writing to {filename}: {e}")
+    assert data is not None, CustomException("Specify the data to write to json")
+    try:
+        with open(file=filename, mode="w", encoding="utf-8") as f:
+            json.dump(obj=data, fp=f, indent=4, ensure_ascii=False)
+    except (IOError, OSError, TypeError) as e:
+        print(f"Error writing to {filename}: {e}")
 
 
 def read_from_json(filename="library.json") -> None:
     try:
         with open(file=filename, mode="r", encoding="utf-8") as f:
             return json.load(f)
-    except FileNotFoundError as e:
+    except FileNotFoundError:
         raise CustomException(f"No file named {filename}")
     except json.JSONDecodeError as e:
         raise CustomException(f"Error decoding JSON from {filename}: {e}")
-    except (IOError, OSError) as e:
-        raise CustomException(f"This seems like a serious issue. Call Jeff Bezos.")
+    except (IOError, OSError):
+        raise CustomException("This seems like a serious issue. Call Jeff Bezos.")
     else:
         print("else block")
     finally:
-        print(f"life goes on")
+        print("life goes on")
         return
 
 
@@ -203,7 +217,7 @@ class EBook(Book):
         author: Union[str, None],
         year: Union[str, int, None],
         genre: Union[str, None],
-        filename: Union[str, None]
+        filename: Union[str, None],
     ):
         super().__init__(title, author, year, genre)
         self.filename = filename
