@@ -2,6 +2,10 @@ import json
 from typing import Union
 
 
+class CustomException(Exception):
+    pass
+
+
 def create_book(
     title: Union[str, None] = None,
     author: Union[str, None] = None,
@@ -25,10 +29,10 @@ def is_classic(book: dict) -> bool:
     return False
 
 
-def book_era(book: dict) -> Union[bool, str]:
+def book_era(book: dict) -> str:
     if book["year"] and book["year"] > 2000:
         return "new"
-    return True
+    return "old"
 
 
 def count_call(func):
@@ -41,86 +45,112 @@ def count_call(func):
 
 
 @count_call
-def add_book(library: list, book: dict) -> None:
-    library.append(book)
-    print(
-        f"{book['title']} is added to library. Currently there are {len(library)} books"
-    )
+def add_book(library: Union[list, None], book: dict) -> None:
+    if library is None:
+        raise CustomException("You should have a library first!")
+    else:
+        library.append(book)
+        print(
+            f"{book['title']} is added to library. Currently there are {len(library)} books"
+        )
 
 
-def remove_book(library: list, title: str) -> None:
-    for book in library:
-        if book["title"] == title:
-            library.remove(book)
-            print(f"Book with title {title} is removed")
-            return
-    print(f"Book with title {title} not found")
+def remove_book(library: Union[list, None], title: str) -> None:
+    if library is None:
+        raise CustomException("No library!")
+    else:
+        for book in library:
+            if book["title"] == title:
+                library.remove(book)
+                print(f"Book with title {title} is removed")
+                return
+        print(f"Book with title {title} not found")
 
 
-def all_genres(library: list) -> None:
+def all_genres(library: Union[list, None]) -> None:
     genres = set()
-    for elem in library:
-        genres.add(elem["genre"])
-    print(genres)
+    if library is None:
+        raise CustomException("No library!")
+    else:
+        for elem in library:
+            genres.add(elem["genre"])
+        print(genres)
 
 
-def book_iterator(library, genre_filter=None):
-    for book in library:
-        if genre_filter is None or book.get("genre") == genre_filter:
-            yield book
+def book_iterator(library: Union[list, None], genre_filter=None):
+    if library is None:
+        raise CustomException("You should have a library first!")
+    else:
+        for book in library:
+            if genre_filter is None or book.get("genre") == genre_filter:
+                yield book
 
 
-def write_to_json(data, filename="library.json") -> None:
-    try:
-        with open(file=filename, mode="w", encoding="utf-8") as f:
-            json.dump(obj=data, fp=f, indent=4, ensure_ascii=False)
-    except (IOError, OSError, TypeError) as e:
-        print(f"Error writing to {filename}: {e}")
+def write_to_json(data: object, filename="library.json") -> None:
+    if not data:
+        return
+    else:
+        try:
+            with open(file=filename, mode="w", encoding="utf-8") as f:
+                json.dump(obj=data, fp=f, indent=4, ensure_ascii=False)
+        except (IOError, OSError, TypeError) as e:
+            print(f"Error writing to {filename}: {e}")
 
 
 def read_from_json(filename="library.json") -> None:
     try:
         with open(file=filename, mode="r", encoding="utf-8") as f:
             return json.load(f)
-    except FileNotFoundError:
-        print(f"File {filename} not found")
-        return None
+    except FileNotFoundError as e:
+        raise CustomException(f"No file named {filename}")
     except json.JSONDecodeError as e:
-        print(f"Error decoding JSON from {filename}: {e}")
-        return None
+        raise CustomException(f"Error decoding JSON from {filename}: {e}")
     except (IOError, OSError) as e:
-        print(f"Error reading {filename}: {e}")
-        return None
+        raise CustomException(f"This seems like a serious issue. Call Jeff Bezos.")
+    else:
+        print("else block")
+    finally:
+        print(f"life goes on")
+        return
 
 
-def save_library(library, filename="library.json"):
-    library_data = []
-    for book in library:
-        if isinstance(book, dict):
-            library_data.append(
-                {
-                    "title": book.get("title"),
-                    "author": book.get("author"),
-                    "year": book.get("year"),
-                    "genre": book.get("genre"),
-                    "is_read": book.get("is_read"),
-                }
-            )
-        else:
-            library_data.append(
-                {
-                    "title": book.title,
-                    "author": book.author,
-                    "year": book.year,
-                    "genre": book.genre,
-                    "is_read": book.is_read,
-                }
-            )
-    write_to_json(library_data, filename)
+def save_library(library: Union[list, None], filename="library.json") -> None:
+    library_data: list[object] = []
+    if library is None:
+        raise CustomException("You should have a library first!")
+    if library:
+        for book in library:
+            if isinstance(book, dict):
+                library_data.append(
+                    {
+                        "title": book.get("title"),
+                        "author": book.get("author"),
+                        "year": book.get("year"),
+                        "genre": book.get("genre"),
+                        "is_read": book.get("is_read"),
+                    }
+                )
+            else:
+                library_data.append(
+                    {
+                        "title": book.title,
+                        "author": book.author,
+                        "year": book.year,
+                        "genre": book.genre,
+                        "is_read": book.is_read,
+                    }
+                )
+        write_to_json(library_data, filename)
 
 
 class Book:
-    def __init__(self, title, author, year, genre) -> None:
+    def __init__(
+        self,
+        title: Union[str, None],
+        author: Union[str, None],
+        year: Union[int, str, None],
+        genre: Union[str, None],
+    ) -> None:
         self.title = title
         self.author = author
         self.year = year
@@ -167,7 +197,14 @@ class Library:
 
 
 class EBook(Book):
-    def __init__(self, title, author, year, genre, filename):
+    def __init__(
+        self,
+        title: Union[str, None],
+        author: Union[str, None],
+        year: Union[str, int, None],
+        genre: Union[str, None],
+        filename: Union[str, None]
+    ):
         super().__init__(title, author, year, genre)
         self.filename = filename
 
