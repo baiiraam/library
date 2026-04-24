@@ -287,9 +287,11 @@ class Library:
     """
 
     def __init__(self) -> None:
-        self.books = []
+        self.books: List[Book] = []
 
-    def add_books(self, book) -> None:
+    # I could have made this method specifically type hinted to class Book.
+    # But I am keeping it this way for now, maybe I will change it later, if needed.
+    def add_books(self, book: Book) -> None:
         self.books.append(book)
 
     def __str__(self) -> str:
@@ -371,6 +373,36 @@ def main():
     loaded_library = read_from_json("my_library.json")
     if loaded_library:
         print(f"\nLoaded {len(loaded_library)} books from JSON")
+
+    book_1 = Book(
+        title="Harry Potter and the Sorcerer's Stone",
+        author="J.K.Rowling",
+        year=1997,
+        genre="fantasy",
+    )
+    book_2 = Book(
+        title="Harry Potter and the Chamber of Secrets",
+        author="J.K.Rowling",
+        year=1998,
+        genre="fantasy",
+    )
+    book_3 = EBook(
+        title="Harry Potter and the Prisoner of Azkaban",
+        author="J.K.Rowling",
+        year=1999,
+        genre="fantasy",
+        filename="Azkaban_scenario.txt",
+    )
+
+    library_1 = Library()
+    library_1.add_books(book_1)
+    library_1.add_books(book_2)
+    library_1.add_books(book_3)
+
+    for book in library_1.books:
+        book.mark_as_read()
+    for book in library_1.books:
+        book.display_info()
 
 
 # Entrypoint
