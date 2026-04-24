@@ -75,7 +75,8 @@ def count_call(func: Callable) -> Callable:
     def inner(*args, **kwargs):
         nonlocal countt
         countt += 1
-        print(f"function {func.__name__} was called {countt} times")
+        func_name = getattr(func, "name", "at least 1 :)")
+        print(f"function {func_name} was called {countt} times")
         return func(*args, **kwargs)
 
     return inner
