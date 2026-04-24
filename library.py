@@ -1,10 +1,10 @@
 import json
-from typing import Union
+from typing import Union, Callable, Any, List, Dict
 
 
 class CustomException(Exception):
     """
-    Custom Exception.
+    Custom Exception class for handling library-specific errors.
     """
 
     pass
@@ -16,11 +16,13 @@ def create_book(
     year: Union[int, None] = None,
     is_read: Union[bool, None] = None,
     genre: Union[str, None] = None,
-):
-    """Create a book.
+) -> Dict[str, Any]:
+    """
+    Returns:
+        A dictionary containing the book data with keys matching the parameters.
 
-    Parameters:
-        ...
+    Parameters (all of them are optional):
+        title, author, year, is_read, genre.
     """
     book = {
         "title": title,
@@ -32,43 +34,65 @@ def create_book(
     return book
 
 
-def is_classic(book: dict) -> bool:
+def is_classic(book: Dict[str, Any]) -> bool:
     """
-    Check if a book is classic.
+    Returns:
+        True if the book was published before 1950, False otherwise.
 
     Parameters:
-        ...
+        book: A dictionary containing book data including a 'year' key.
     """
     if book["year"] and book["year"] < 1950:
         return True
     return False
 
 
-def book_era(book: dict) -> str:
+def book_era(book: Dict[str, Any]) -> str:
     """
-    Check if a book is old.
+    Returns:
+        `new` if published after 2000, 'old' otherwise.
 
     Parameter:
-        ...
+        book: A dictionary containing book data including a 'year' key.
     """
     if book["year"] and book["year"] > 2000:
         return "new"
     return "old"
 
 
-def count_call(func):
-    def wrapper(*args, **kwargs):
-        wrapper.counter += 1
+def count_call(func: Callable) -> Callable:
+    """
+    Decorator that counts how many times a function is called.
+
+    Parameters:
+        func: The function to be decorated.
+
+    Returns:
+        A wrapper function that tracks call count and then calls the original function.
+    """
+    countt = 0
+
+    def inner(*args, **kwargs):
+        nonlocal countt
+        countt += 1
+        print(f"function {func.__name__} was called {countt} times")
         return func(*args, **kwargs)
 
-    wrapper.counter = 0
-    return wrapper
+    return inner
 
 
 @count_call
-def add_book(library: Union[list, None], book: dict) -> None:
+def add_book(library: Union[List[Any], None], book: Dict[str, Any]) -> None:
     """
-    Add book.
+    Add a book to the library collection.
+    This function is decorated with @count_call to track how many times it's called.
+
+    Parameters:
+        library: The library list to add the book to (must not be None).
+        book: The book dictionary to add to the library.
+
+    Raises:
+        AssertionError: If library is None (with CustomException).
     """
     assert library is not None, CustomException("You should have a library first!")
     library.append(book)
@@ -77,7 +101,17 @@ def add_book(library: Union[list, None], book: dict) -> None:
     )
 
 
-def remove_book(library: Union[list, None], title: str) -> None:
+def remove_book(library: Union[List[Any], None], title: str) -> None:
+    """
+    Remove a book from the library by its title.
+
+    Parameters:
+        library: The library list to remove the book from (must not be None).
+        title: The title of the book to remove.
+
+    Raises:
+        AssertionError: If library is None (with CustomException).
+    """
     assert library is not None, CustomException("No library!")
     for book in library:
         if book["title"] == title:
@@ -87,7 +121,16 @@ def remove_book(library: Union[list, None], title: str) -> None:
     print(f"Book with title {title} not found")
 
 
-def all_genres(library: Union[list, None]) -> None:
+def all_genres(library: Union[List[Any], None]) -> None:
+    """
+    Display all unique genres present in the library.
+
+    Parameters:
+        library: The library list to analyze (must not be None).
+
+    Raises:
+        AssertionError: If library is None (with CustomException).
+    """
     genres = set()
     assert library is not None, CustomException("No library!")
     for elem in library:
@@ -95,7 +138,22 @@ def all_genres(library: Union[list, None]) -> None:
     print(genres)
 
 
-def book_iterator(library: Union[list, None], genre_filter=None):
+def book_iterator(
+    library: Union[List[Any], None], genre_filter: Union[str, None] = None
+):
+    """
+    Generator function that yields books from the library, optionally filtered by genre.
+
+    Parameters:
+        library: The library list to iterate over (must not be None).
+        genre_filter: Optional genre to filter books by. If None, all books are yielded.
+
+    Yields:
+        Book dictionaries one at a time from the library.
+
+    Raises:
+        AssertionError: If library is None (with CustomException).
+    """
     assert library is not None, CustomException("You should have a library first!")
     for book in library:
         if genre_filter is None or book.get("genre") == genre_filter:
@@ -103,6 +161,16 @@ def book_iterator(library: Union[list, None], genre_filter=None):
 
 
 def write_to_json(data: object, filename="library.json") -> None:
+    """
+    Write data to a JSON file.
+
+    Parameters:
+        data: The Python object to be serialized to JSON.
+        filename: The name of the file to write to (default: "library.json").
+
+    Raises:
+        AssertionError: If data is None (with CustomException).
+    """
     assert data is not None, CustomException("Specify the data to write to json")
     try:
         with open(file=filename, mode="w", encoding="utf-8") as f:
@@ -111,7 +179,19 @@ def write_to_json(data: object, filename="library.json") -> None:
         print(f"Error writing to {filename}: {e}")
 
 
-def read_from_json(filename="library.json") -> None:
+def read_from_json(filename="library.json") -> Any:
+    """
+    Read and parse JSON data from a file.
+
+    Parameters:
+        filename: The name of the file to read from (default: "library.json").
+
+    Returns:
+        The deserialized Python object from the JSON file.
+
+    Raises:
+        CustomException: If file not found, JSON is malformed, or IO errors occur.
+    """
     try:
         with open(file=filename, mode="r", encoding="utf-8") as f:
             return json.load(f)
@@ -125,11 +205,20 @@ def read_from_json(filename="library.json") -> None:
         print("else block")
     finally:
         print("life goes on")
-        return
 
 
-def save_library(library: Union[list, None], filename="library.json") -> None:
-    library_data: list[object] = []
+def save_library(library: Union[List[Any], None], filename="library.json") -> None:
+    """
+    Save the entire library collection to a JSON file.
+
+    Parameters:
+        library: The library list to save (must not be None).
+        filename: The name of the file to save to (default: "library.json").
+
+    Raises:
+        CustomException: If library is None.
+    """
+    library_data: List[object] = []
     if library is None:
         raise CustomException("You should have a library first!")
     if library:
@@ -158,6 +247,10 @@ def save_library(library: Union[list, None], filename="library.json") -> None:
 
 
 class Book:
+    """
+    Base class representing books.
+    """
+
     def __init__(
         self,
         title: Union[str, None],
@@ -182,21 +275,17 @@ class Book:
             print(f"Book {self.title} is not read")
 
     def __str__(self) -> str:
-        if self.title == "26-lar":
-            try:
-                with open(file="text.txt", mode="r", encoding="utf-8") as f:
-                    filecontents = f.readline()
-                    return filecontents
-            except FileNotFoundError:
-                return f"Title {self.title}, Author: {self.author}"
-        else:
-            return f"Title: {self.title}, Author: {self.author}"
+        return f"Title: {self.title}, Author: {self.author}"
 
     def __repr__(self) -> str:
         return f"Class: {self.__class__}"
 
 
 class Library:
+    """
+    Library class.
+    """
+
     def __init__(self) -> None:
         self.books = []
 
@@ -211,6 +300,10 @@ class Library:
 
 
 class EBook(Book):
+    """
+    Child class of Book.
+    """
+
     def __init__(
         self,
         title: Union[str, None],
@@ -224,6 +317,16 @@ class EBook(Book):
 
 
 def main():
+    """
+    Main functionality.
+    """
+    app_name = "library"
+    version = "0.1"
+    is_active = True
+    library = []
+    print(
+        f"{app_name} {'is active' if is_active else 'is not active'} with version {version}"
+    )
     book1 = create_book(title="Karamazov brothers", author="Dostoyevski", year=1880)
     print(f"book {book1.get('title')} is classic: {is_classic(book1)}")
 
@@ -259,8 +362,6 @@ def main():
     for book in book_iterator(library, genre_filter="Roman"):
         print(book["title"])
 
-    print(f"\nadd_book was called {add_book.counter} times")
-
     ebook1 = EBook("26-lar", "Semed Vurgun", 1998, "poem", "Bakinin_derdi_var.epub")
     print(f"\nEBook created: {ebook1.title}, filename: {ebook1.filename}")
     print("Let's call it!")
@@ -272,13 +373,6 @@ def main():
         print(f"\nLoaded {len(loaded_library)} books from JSON")
 
 
+# Entrypoint
 if __name__ == "__main__":
-    app_name = "library"
-    version = "0.1"
-    is_active = True
-    book_count = 0
-    library = []
-    print(
-        f"{app_name} {'is active' if is_active else 'is not active'} with version {version}"
-    )
     main()
