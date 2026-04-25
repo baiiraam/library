@@ -2,4 +2,3 @@ __pycache__/
 .ruff_cache/
 .venv/
 .DS_Store
-text.txt
