@@ -75,7 +75,7 @@ def count_call(func: Callable) -> Callable:
     def inner(*args, **kwargs):
         nonlocal countt
         countt += 1
-        func_name = getattr(func, "name", "at least 1 :)")
+        func_name = getattr(func, "__name__")
         print(f"function {func_name} was called {countt} times")
         return func(*args, **kwargs)
 
@@ -267,7 +267,7 @@ class Book:
 
     def mark_as_read(self) -> None:
         self.is_read = True
-        print(f"Book '{self.title} marked as read'")
+        print(f"Book {self.title} marked as read'")
 
     def display_info(self) -> None:
         if self.is_read:
@@ -290,8 +290,6 @@ class Library:
     def __init__(self) -> None:
         self.books: List[Book] = []
 
-    # I could have made this method specifically type hinted to class Book.
-    # But I am keeping it this way for now, maybe I will change it later, if needed.
     def add_books(self, book: Book) -> None:
         self.books.append(book)
 
@@ -409,3 +407,35 @@ def main():
 # Entrypoint
 if __name__ == "__main__":
     main()
+
+
+# Should return:
+
+# library is active with version 0.1
+# book Karamazov brothers is classic: True
+# function add_book was called 1 times
+# Ali Nino is added to library. Currently there are 1 books
+# function add_book was called 2 times
+# 1984 is added to library. Currently there are 2 books
+# function add_book was called 3 times
+# Sapiens is added to library. Currently there are 3 books
+# ['Ali Nino', '1984']
+# ['Qurban Seid', 'George Orwell', 'Yuval Noah Harari']
+# [1937, 1949, 2011]
+# {'Roman', 'Tarix', 'Distopia'}
+
+# Books with genre 'Roman':
+# Ali Nino
+
+# EBook created: 26-lar, filename: Bakinin_derdi_var.epub
+# Let's call it!
+# Title: 26-lar, Author: Semed Vurgun
+# life goes on
+
+# Loaded 3 books from JSON
+# Book Harry Potter and the Sorcerer's Stone marked as read'
+# Book Harry Potter and the Chamber of Secrets marked as read'
+# Book Harry Potter and the Prisoner of Azkaban marked as read'
+# Book Harry Potter and the Sorcerer's Stone is read
+# Book Harry Potter and the Chamber of Secrets is read
+# Book Harry Potter and the Prisoner of Azkaban is read
