@@ -1,6 +1,26 @@
-{
-  "author": "Yuval Noah Harari",
-  "genre": "Tarix",
-  "title": "Sapiens",
-  "year": 2011
-}
+[
+  {
+    "author": "Dostoyevski",
+    "title": "Dostoyevski",
+    "genre": null,
+    "year": 1880
+  },
+  {
+    "author": "Qurban Seid",
+    "title": "Qurban Seid",
+    "genre": "Roman",
+    "year": 1937
+  },
+  {
+    "author": "George Orwell",
+    "title": "George Orwell",
+    "genre": "Distopia",
+    "year": 1949
+  },
+  {
+    "author": "Yuval Noah Harari",
+    "title": "Yuval Noah Harari",
+    "genre": "Tarix",
+    "year": 2011
+  }
+]

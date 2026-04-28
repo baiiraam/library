@@ -87,13 +87,15 @@ class Library:
 
     @count_call
     def add_books(self, book: Book) -> None:
-        assert self.validator(book), CustomException("oops")
+        if not self.validator(book):
+            raise CustomException("Only Book type allowed")
         self.books.append(book)
 
-    def remove_book(self, title) -> Optional[str]:
-        assert isinstance(title, str), CustomException("oops")
+    def remove_book(self, title: str) -> Optional[str]:
+        if not isinstance(title, str):
+            raise CustomException("Only Book type allowed")
         for book in self.books:
-            if book.title == "title":
+            if book.title == title:
                 self.books.remove(book)
                 return
         return "book not found"
@@ -108,7 +110,8 @@ class Library:
 
     def all_genres(self) -> set:
         genres = set()
-        assert len(self.books) > 0, "no books in library"
+        if not len(self.books) > 0:
+            raise CustomException("no books in library")
         for book in self.books:
             genres.add(book.genre)
         return genres
@@ -144,17 +147,16 @@ class JsonWriter:
         pass
 
     @staticmethod
-    def validate_book(something):
+    def validate_book(something: Book) -> bool:
         return isinstance(something, Book)
 
     @staticmethod
-    def validate_library(something):
+    def validate_library(something: Library) -> bool:
         return isinstance(something, Library)
 
-    def write_book(self, other):
-        assert self.validate_book(other), CustomException(
-            "object should be of Book class"
-        )
+    def write_book(self, other: Book):
+        if not self.validate_book(other):
+            raise CustomException("object should be of Book class")
         book_dict = {
             "author": other.author,
             "genre": other.genre,
@@ -164,10 +166,20 @@ class JsonWriter:
         with open(self.filename, "w", encoding="utf-8") as f:
             json.dump(obj=book_dict, fp=f, indent=2)
 
-    def write_library(self, other):
-        assert self.validate_library(other), CustomException("oops")
+    def write_library(self, other: Library):
+        if not self.validate_library(other):
+            raise CustomException("Only Library type allowed")
+        books = []
         for book in other.books:
-            self.write_book(book)
+            book_dict = {
+                "author": book.author,
+                "title": book.author,
+                "genre": book.genre,
+                "year": book.year,
+            }
+            books.append(book_dict)
+        with open(self.filename, "w", encoding="utf-8") as f:
+            json.dump(books, f, indent=2)
 
 
 class JsonReader:
@@ -176,8 +188,7 @@ class JsonReader:
     @staticmethod
     def read_file(filename):
         with open(file=filename, mode="r", encoding="utf-8") as f:
-            contents = f.read()
-        return contents
+            return json.load(f)
 
 
 def main():
