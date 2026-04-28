@@ -1,25 +1,25 @@
 [
   {
     "author": "Dostoyevski",
-    "title": "Dostoyevski",
+    "title": "Karamazov brothers",
     "genre": null,
     "year": 1880
   },
   {
     "author": "Qurban Seid",
-    "title": "Qurban Seid",
+    "title": "Ali Nino",
     "genre": "Roman",
     "year": 1937
   },
   {
     "author": "George Orwell",
-    "title": "George Orwell",
+    "title": "1984",
     "genre": "Distopia",
     "year": 1949
   },
   {
     "author": "Yuval Noah Harari",
-    "title": "Yuval Noah Harari",
+    "title": "Sapiens",
     "genre": "Tarix",
     "year": 2011
   }
