@@ -1,23 +1,6 @@
-[
-    {
-        "title": "Ali Nino",
-        "author": "Qurban Seid",
-        "year": 1937,
-        "genre": "Roman",
-        "is_read": null
-    },
-    {
-        "title": "1984",
-        "author": "George Orwell",
-        "year": 1949,
-        "genre": "Distopia",
-        "is_read": null
-    },
-    {
-        "title": "Sapiens",
-        "author": "Yuval Noah Harari",
-        "year": 2011,
-        "genre": "Tarix",
-        "is_read": null
-    }
-]
+{
+  "author": "Yuval Noah Harari",
+  "genre": "Tarix",
+  "title": "Sapiens",
+  "year": 2011
+}
