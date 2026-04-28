@@ -91,14 +91,13 @@ class Library:
             raise CustomException("Only Book type allowed")
         self.books.append(book)
 
-    def remove_book(self, title: str) -> Optional[str]:
+    def remove_book(self, title: str) -> None:
         if not isinstance(title, str):
-            raise CustomException("Only Book type allowed")
+            raise CustomException("Title must be string")
         for book in self.books:
             if book.title == title:
                 self.books.remove(book)
                 return
-        return "book not found"
 
     @staticmethod
     def validator(something: Any) -> bool:
@@ -173,7 +172,7 @@ class JsonWriter:
         for book in other.books:
             book_dict = {
                 "author": book.author,
-                "title": book.author,
+                "title": book.title,
                 "genre": book.genre,
                 "year": book.year,
             }
@@ -223,12 +222,10 @@ def main():
     year_2000 = [book.year for book in library.books]
     print(year_2000)
 
-    library.all_genres()
-
     jsonwriter = JsonWriter()
     jsonwriter.write_book(book1)
 
-    library.all_genres()
+    print(library.all_genres())
 
     ebook1 = EBook("26-lar", "Semed Vurgun", 1998, "poem", "Bakinin_derdi_var.epub")
     print(f"\nEBook created: {ebook1.title}, filename: {ebook1.filename}")
